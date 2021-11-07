@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class SensorRestService {
@@ -39,6 +40,16 @@ public class SensorRestService {
         String[] splited = url.split("/");
         String idString = splited[splited.length - 1];
         return Long.parseLong(idString);
+    }
+
+    public Optional<SensorInfo> getNeighbour(long id) {
+        final ResponseEntity<SensorInfo> response = restTemplate.getForEntity("http://localhost:8080/sensor/" + id + "/neighbour", SensorInfo.class);
+
+        if (Objects.equals(response.getStatusCode(), HttpStatus.NO_CONTENT)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(response.getBody());
     }
 
 }

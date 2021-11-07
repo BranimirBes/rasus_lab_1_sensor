@@ -29,10 +29,13 @@ public class GenerateReadingsScheduledService {
             return;
         }
 
-        try {
-            SensorReadingResponse response = sensorRequestReadingService.getSensorReading(neighbourSensor.getHost(), neighbourSensor.getPort());
-        } catch (Exception e) {
-            logger.info("Error getting sensor reading");
+        SensorReadingResponse response;
+        if (neighbourSensor.isNeighbourFindSuccess()) {
+            try {
+                response = sensorRequestReadingService.getSensorReading(neighbourSensor.getHost(), neighbourSensor.getPort());
+            } catch (Exception e) {
+                logger.info("Error getting sensor reading");
+            }
         }
     }
 
