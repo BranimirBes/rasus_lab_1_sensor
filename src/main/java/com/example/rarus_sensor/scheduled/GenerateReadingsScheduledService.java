@@ -47,9 +47,11 @@ public class GenerateReadingsScheduledService {
         SensorReadingResponse response;
         if (neighbourSensor.isNeighbourFindSuccess()) {
             try {
+                logger.info("Sending request");
                 response =
                     sensorRequestReadingService.getSensorReading(neighbourSensor.getHost(), neighbourSensor.getPort());
                 sensorReadingDto = combineResults(response, mySensorReading);
+                logger.info("Recived data");
             } catch (Exception e) {
                 logger.info("Error getting sensor reading");
             }
@@ -57,6 +59,7 @@ public class GenerateReadingsScheduledService {
             sensorReadingDto = map(mySensorReading);
         }
 
+        logger.info("Sending data to server");
         sensorRestService.saveSensorData(sensorReadingDto, mySensorInfo.getId());
     }
 

@@ -35,7 +35,7 @@ public class SensorReadingService extends SensorReadingServiceGrpc.SensorReading
             response
         );
 
-        logger.info("Responding with: " + response.getCo());
+        logger.info("Responding data");
         responseObserver.onCompleted();
     }
 
