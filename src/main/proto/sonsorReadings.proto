@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.rarus_sensor";
+
+package com.example.rarus_sensor;
+
+service SensorReadingService {
+  rpc RequestSensorReading (SensorReadingRequest) returns (SensorReadingResponse) {}
+}
+
+message SensorReadingRequest {
+
+}
+
+message SensorReadingResponse {
+  float temperature = 1;
+  float pressure = 2;
+  float humidity = 3;
+  float co = 4;
+  float so2 = 5;
+  float no2 = 6;
+}
