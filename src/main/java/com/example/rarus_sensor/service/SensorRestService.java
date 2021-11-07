@@ -1,6 +1,7 @@
 package com.example.rarus_sensor.service;
 
 import com.example.rarus_sensor.dto.SensorInfo;
+import com.example.rarus_sensor.dto.SensorReadingDto;
 import com.example.rarus_sensor.exception.RegistrationFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -16,18 +17,22 @@ import java.util.Optional;
 
 @Service
 public class SensorRestService {
+
     private final RestTemplate restTemplate;
+    private final MySensorInfo mySensorInfo;
 
     @Autowired
-    public SensorRestService(RestTemplateBuilder builder) {
+    public SensorRestService(RestTemplateBuilder builder, MySensorInfo mySensorInfo) {
         this.restTemplate = builder
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
             .build();
+        this.mySensorInfo = mySensorInfo;
     }
 
     public long registerSensor(SensorInfo sensorInfo) {
-        final ResponseEntity<Void> response = restTemplate.postForEntity("http://localhost:8080/sensor/", sensorInfo, Void.class);
+        final ResponseEntity<Void> response =
+            restTemplate.postForEntity("http://localhost:8080/sensor/", sensorInfo, Void.class);
 
         if (Objects.equals(response.getStatusCode(), HttpStatus.NO_CONTENT)) {
             throw new RegistrationFailedException("Failed to register to server.");
@@ -43,13 +48,18 @@ public class SensorRestService {
     }
 
     public Optional<SensorInfo> getNeighbour(long id) {
-        final ResponseEntity<SensorInfo> response = restTemplate.getForEntity("http://localhost:8080/sensor/" + id + "/neighbour", SensorInfo.class);
+        final ResponseEntity<SensorInfo> response =
+            restTemplate.getForEntity("http://localhost:8080/sensor/" + id + "/neighbour", SensorInfo.class);
 
         if (Objects.equals(response.getStatusCode(), HttpStatus.NO_CONTENT)) {
             return Optional.empty();
         }
 
-        return Optional.of(response.getBody());
+        return Optional.ofNullable(response.getBody());
+    }
+
+    public void saveSensorData(SensorReadingDto sensorReadingDto, long id) {
+        restTemplate.postForEntity("http://localhost:8080/sensor/" + id, sensorReadingDto, Void.class);
     }
 
 }

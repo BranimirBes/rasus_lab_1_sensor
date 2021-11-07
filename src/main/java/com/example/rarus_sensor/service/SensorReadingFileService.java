@@ -7,13 +7,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 @Service
 public class SensorReadingFileService {
 
+    private static final Logger logger = Logger.getLogger(SensorReadingFileService.class.getName());
+
     private interface FieldSetter {
+
         void setField(Float value);
+
     }
 
     public SensorReadingResponse getSensorReading() {
@@ -21,7 +26,7 @@ public class SensorReadingFileService {
         try {
             randomLine = getRandomLine();
         } catch (IOException e) {
-            System.out.println("Error");
+            logger.info(e.getMessage());
         }
 
         if (Objects.equals(randomLine, "")) {
@@ -47,7 +52,7 @@ public class SensorReadingFileService {
 
     private String getRandomLine() throws IOException {
         Stream<String> lines = Files.lines(Paths.get("D:\\rarus_sensor\\src\\main\\resources\\readings.csv"));
-        int line = ((int)(Math.random() * 100)) + 1;
+        int line = ((int) (Math.random() * 100)) + 1;
         return lines.skip(line - 1).findFirst().get();
     }
 
@@ -56,4 +61,5 @@ public class SensorReadingFileService {
             fieldSetter.setField(Float.parseFloat(value));
         }
     }
+
 }

@@ -12,29 +12,31 @@ import java.util.logging.Logger;
 
 @Service
 public class SensorReadingService extends SensorReadingServiceGrpc.SensorReadingServiceImplBase {
-  private static final Logger logger = Logger.getLogger(SensorReadingService.class.getName());
 
-  private final SensorReadingFileService sensorReadingFileService;
+    private static final Logger logger = Logger.getLogger(SensorReadingService.class.getName());
 
-  @Autowired
-  public SensorReadingService(SensorReadingFileService sensorReadingFileService) {
-    this.sensorReadingFileService = sensorReadingFileService;
-  }
+    private final SensorReadingFileService sensorReadingFileService;
 
-  @Override
-  public void requestSensorReading(
-      SensorReadingRequest request, StreamObserver<SensorReadingResponse> responseObserver
-  ) {
+    @Autowired
+    public SensorReadingService(SensorReadingFileService sensorReadingFileService) {
+        this.sensorReadingFileService = sensorReadingFileService;
+    }
 
-    // Create response
-    SensorReadingResponse response = sensorReadingFileService.getSensorReading();
+    @Override
+    public void requestSensorReading(
+        SensorReadingRequest request, StreamObserver<SensorReadingResponse> responseObserver
+    ) {
 
-    // Send response
-    responseObserver.onNext(
-        response
-    );
+        // Create response
+        SensorReadingResponse response = sensorReadingFileService.getSensorReading();
 
-    logger.info("Responding with: " + response.getCo());
-    responseObserver.onCompleted();
-  }
+        // Send response
+        responseObserver.onNext(
+            response
+        );
+
+        logger.info("Responding with: " + response.getCo());
+        responseObserver.onCompleted();
+    }
+
 }

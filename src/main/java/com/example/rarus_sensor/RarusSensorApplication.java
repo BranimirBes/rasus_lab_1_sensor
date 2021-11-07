@@ -1,7 +1,9 @@
 package com.example.rarus_sensor;
 
 import com.example.rarus_sensor.dto.SensorInfo;
+import com.example.rarus_sensor.exception.RegistrationFailedException;
 import com.example.rarus_sensor.grpc.RasusSensorReadingServer;
+import com.example.rarus_sensor.service.MySensorInfo;
 import com.example.rarus_sensor.service.NeighbourSensor;
 import com.example.rarus_sensor.service.SensorRestService;
 import com.example.rarus_sensor.util.SensorInfoGeneratingUtil;
@@ -23,17 +25,19 @@ public class RarusSensorApplication implements CommandLineRunner {
     private final SensorRestService sensorRestService;
     private final SensorInfoGeneratingUtil sensorInfoGeneratingUtil;
     private final NeighbourSensor neighbourSensor;
+    private final MySensorInfo mySensorInfo;
     private static final Logger logger = Logger.getLogger(RarusSensorApplication.class.getName());
 
     @Autowired
     public RarusSensorApplication(RasusSensorReadingServer server,
         SensorRestService sensorRestService,
         SensorInfoGeneratingUtil sensorInfoGeneratingUtil,
-        NeighbourSensor neighbourSensor) {
+        NeighbourSensor neighbourSensor, MySensorInfo mySensorInfo) {
         this.server = server;
         this.sensorRestService = sensorRestService;
         this.sensorInfoGeneratingUtil = sensorInfoGeneratingUtil;
         this.neighbourSensor = neighbourSensor;
+        this.mySensorInfo = mySensorInfo;
     }
 
     public static void main(String[] args) {
@@ -42,14 +46,21 @@ public class RarusSensorApplication implements CommandLineRunner {
 
     @Override
     public void run(String[] args) throws IOException, InterruptedException {
-        long id = sensorRestService.registerSensor(sensorInfoGeneratingUtil.generateSensorInfo());
+        long id;
+
+        try {
+            id = sensorRestService.registerSensor(sensorInfoGeneratingUtil.generateSensorInfo());
+        } catch (RegistrationFailedException e) {
+            logger.info("Registration failed");
+            return;
+        }
+
+        mySensorInfo.setId(id);
         Optional<SensorInfo> sensorInfo = sensorRestService.getNeighbour(id);
         neighbourSensor.updateInformation(sensorInfo);
-        logger.info(neighbourSensor.getHost());
-        logger.info(neighbourSensor.getPort() + "");
 
-        // server.start();
-        // server.blockUntilShutdown();
+        server.start();
+        server.blockUntilShutdown();
     }
 
 }

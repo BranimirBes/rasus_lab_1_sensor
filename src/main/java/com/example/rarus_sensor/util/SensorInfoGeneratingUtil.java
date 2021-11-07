@@ -29,7 +29,8 @@ public class SensorInfoGeneratingUtil {
 
     private static double generateLongitude() {
         double min = 15.87;
-        double toAdd = (int)(Math.random() * 13) / (double)100;
+        double toAdd = (int) (Math.random() * 13) / (double) 100;
         return min + toAdd;
     }
+
 }
