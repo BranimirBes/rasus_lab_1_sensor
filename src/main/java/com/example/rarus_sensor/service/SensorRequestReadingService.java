@@ -1,5 +1,6 @@
-package com.example.rarus_sensor;
+package com.example.rarus_sensor.service;
 
+import com.example.rarus_sensor.SensorReadingResponse;
 import com.example.rarus_sensor.grpc.RasusSensorClient;
 import org.springframework.stereotype.Service;
 

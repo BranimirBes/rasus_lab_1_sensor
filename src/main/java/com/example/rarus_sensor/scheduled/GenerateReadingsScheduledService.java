@@ -1,11 +1,11 @@
 package com.example.rarus_sensor.scheduled;
 
 import com.example.rarus_sensor.SensorReadingResponse;
-import com.example.rarus_sensor.SensorRequestReadingService;
+import com.example.rarus_sensor.service.NeighbourSensor;
+import com.example.rarus_sensor.service.SensorRequestReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.logging.Logger;
 
@@ -13,18 +13,24 @@ import java.util.logging.Logger;
 public class GenerateReadingsScheduledService {
     private static final Logger logger = Logger.getLogger(GenerateReadingsScheduledService.class.getName());
     private final SensorRequestReadingService sensorRequestReadingService;
+    private final NeighbourSensor neighbourSensor;
 
     @Autowired
     public GenerateReadingsScheduledService(
-        SensorRequestReadingService sensorRequestReadingService) {
+        SensorRequestReadingService sensorRequestReadingService,
+        NeighbourSensor neighbourSensor) {
         this.sensorRequestReadingService = sensorRequestReadingService;
+        this.neighbourSensor = neighbourSensor;
     }
 
     @Scheduled(initialDelay = 10000, fixedDelay = 10000)
     public void generateReading() {
+        if (!neighbourSensor.isConfigured()) {
+            return;
+        }
+
         try {
-            SensorReadingResponse response = sensorRequestReadingService.getSensorReading("127.0.0.1", 8080);
-            logger.info("SensorReading response is " + response.getCo());
+            SensorReadingResponse response = sensorRequestReadingService.getSensorReading(neighbourSensor.getHost(), neighbourSensor.getPort());
         } catch (Exception e) {
             logger.info("Error getting sensor reading");
         }

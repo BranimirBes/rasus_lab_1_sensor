@@ -3,14 +3,23 @@ package com.example.rarus_sensor.grpc;
 import com.example.rarus_sensor.SensorReadingRequest;
 import com.example.rarus_sensor.SensorReadingResponse;
 import com.example.rarus_sensor.SensorReadingServiceGrpc;
+import com.example.rarus_sensor.service.SensorReadingFileService;
 import io.grpc.stub.StreamObserver;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.logging.Logger;
 
-@Component
+@Service
 public class SensorReadingService extends SensorReadingServiceGrpc.SensorReadingServiceImplBase {
   private static final Logger logger = Logger.getLogger(SensorReadingService.class.getName());
+
+  private final SensorReadingFileService sensorReadingFileService;
+
+  @Autowired
+  public SensorReadingService(SensorReadingFileService sensorReadingFileService) {
+    this.sensorReadingFileService = sensorReadingFileService;
+  }
 
   @Override
   public void requestSensorReading(
@@ -18,14 +27,7 @@ public class SensorReadingService extends SensorReadingServiceGrpc.SensorReading
   ) {
 
     // Create response
-    SensorReadingResponse response = SensorReadingResponse.newBuilder()
-        .setHumidity((float)12.5)
-        .setCo((float)12.5)
-        .setNo2((float)12.5)
-        .setPressure((float)12.5)
-        .setSo2((float)12.5)
-        .setTemperature((float)12.5)
-        .build();
+    SensorReadingResponse response = sensorReadingFileService.getSensorReading();
 
     // Send response
     responseObserver.onNext(
