@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class NeighbourSensor {
 
     private String host = "127.0.0.1";
-    private int port = 8080;
+    private int port = 8000;
     private boolean isConfigured = true;
 
     public String getHost() {
